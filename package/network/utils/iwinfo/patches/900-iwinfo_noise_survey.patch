@@ -1,0 +1,54 @@
+--- a/iwinfo_cli.c	2021-01-31 09:05:58.000000000 -0500
++++ b/iwinfo_cli.c	2021-07-31 11:45:25.000000000 -0400
+@@ -677,6 +677,32 @@
+ }
+ 
+ 
++static void print_channel_survey(const struct iwinfo_ops *iw, const char *ifname)
++{
++	int i, len;
++	char buf[IWINFO_BUFSIZE];
++	struct iwinfo_survey_entry *e;
++
++	if (iw->survey(ifname, buf, &len) || len <= 0)
++	{
++		printf("No channel survey information available\n");
++		return;
++	}
++
++	for (i = 0; i < len; i += sizeof(struct iwinfo_survey_entry))
++	{
++		e = (struct iwinfo_survey_entry *) &buf[i];
++		
++		printf("Survey data from %s frequency %d MHz: %s noise (active time: %llu ms, busy time: %llu ms)\n",
++			ifname,
++			e->mhz,
++			format_noise((int8_t)e->noise),
++			e->active_time,
++			e->busy_time);			
++	}
++}
++
++
+ static void print_txpwrlist(const struct iwinfo_ops *iw, const char *ifname)
+ {
+ 	int len, pwr, off, i;
+@@ -878,6 +904,7 @@
+ 			"	iwinfo <device> assoclist\n"
+ 			"	iwinfo <device> countrylist\n"
+ 			"	iwinfo <device> htmodelist\n"
++			"	iwinfo <network> noiselist\n"
+ 			"	iwinfo <backend> phyname <section>\n"
+ 		);
+ 
+@@ -973,6 +1000,10 @@
+ 				case 'h':
+ 					print_htmodelist(iw, argv[1]);
+ 					break;
++				
++				case 'n':
++					print_channel_survey(iw, argv[1]);
++					break;
+ 
+ 				default:
+ 					fprintf(stderr, "Unknown command: %s\n", argv[i]);
