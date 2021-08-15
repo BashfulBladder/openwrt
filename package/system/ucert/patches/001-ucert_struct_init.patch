@@ -1,0 +1,25 @@
+--- a/ucert.c	2020-05-16 17:04:05.000000000 -0400
++++ b/ucert.c	2021-07-18 22:55:08.000000000 -0400
+@@ -214,7 +214,10 @@
+ /* append signature to certfile */
+ static int cert_append(const char *certfile, const char *sigfile) {
+ 	char filebuf[CERT_BUF_LEN];
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+ 	struct blob_buf sigbuf = {0};
++#pragma clang diagnostic pop
+ 	ssize_t len;
+ 	int ret;
+ 
+@@ -442,8 +445,11 @@
+ 
+ /* issue an auth certificate for pubkey */
+ static int cert_issue(const char *certfile, const char *pubkeyfile, const char *seckeyfile) {
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+ 	struct blob_buf payloadbuf = {0};
+ 	struct blob_buf certbuf = {0};
++#pragma clang diagnostic pop
+ 	struct timeval tv;
+ 	ssize_t pklen, siglen;
+ 	int revoker = 1;

@@ -1,0 +1,38 @@
+--- a/Utilities/cmcurl/lib/vtls/sectransp.c	2020-11-24 08:50:26.000000000 -0500
++++ a/Utilities/cmcurl/lib/vtls/sectransp.c	2021-07-13 17:28:11.000000000 -0400
+@@ -59,6 +59,11 @@
+    requires the macOS 10.13 or iOS 11 SDK or later. */
+ #if (TARGET_OS_MAC && !(TARGET_OS_EMBEDDED || TARGET_OS_IPHONE))
+ 
++#if (CURL_BUILD_MAC_10_13 || CURL_BUILD_IOS_11) && \
++  (HAVE_BUILTIN_AVAILABLE == 1) && !defined(TARGET_OS_TV)
++#define SECTRANSP_HAS_ALPN
++#endif
++
+ #if MAC_OS_X_VERSION_MAX_ALLOWED < 1050
+ #error "The Secure Transport back-end requires Leopard or later."
+ #endif /* MAC_OS_X_VERSION_MAX_ALLOWED < 1050 */
+@@ -1599,9 +1604,9 @@
+   }
+ #endif /* CURL_BUILD_MAC_10_8 || CURL_BUILD_IOS */
+ 
+-#if (CURL_BUILD_MAC_10_13 || CURL_BUILD_IOS_11) && HAVE_BUILTIN_AVAILABLE == 1
++#ifdef SECTRANSP_HAS_ALPN
+   if(conn->bits.tls_enable_alpn) {
+-    if(__builtin_available(macOS 10.13.4, iOS 11, tvOS 11, *)) {
++    if(__builtin_available(macOS 10.13.2, macOS 10.13.4, iOS 11, tvOS 11, *)) {
+       CFMutableArrayRef alpnArr = CFArrayCreateMutable(NULL, 0,
+                                                        &kCFTypeArrayCallBacks);
+ 
+@@ -2656,9 +2661,9 @@
+         break;
+     }
+ 
+-#if(CURL_BUILD_MAC_10_13 || CURL_BUILD_IOS_11) && HAVE_BUILTIN_AVAILABLE == 1
++#ifdef SECTRANSP_HAS_ALPN
+     if(conn->bits.tls_enable_alpn) {
+-      if(__builtin_available(macOS 10.13.4, iOS 11, tvOS 11, *)) {
++      if(__builtin_available(macOS 10.13.2, macOS 10.13.4, iOS 11, tvOS 11, *)) {
+         CFArrayRef alpnArr = NULL;
+         CFStringRef chosenProtocol = NULL;
+         err = SSLCopyALPNProtocols(backend->ssl_ctx, &alpnArr);

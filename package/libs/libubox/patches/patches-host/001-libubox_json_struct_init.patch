@@ -1,0 +1,24 @@
+--- a/blobmsg_json.c
++++ b/blobmsg_json.c
+@@ -321,7 +321,10 @@ static void setup_strbuf(struct strbuf *
+ 
+ char *blobmsg_format_json_with_cb(struct blob_attr *attr, bool list, blobmsg_json_format_t cb, void *priv, int indent)
+ {
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+ 	struct strbuf s = {0};
++#pragma clang diagnostic pop
+ 	bool array;
+ 	char *ret;
+ 
+@@ -355,7 +358,10 @@ char *blobmsg_format_json_with_cb(struct
+ 
+ char *blobmsg_format_json_value_with_cb(struct blob_attr *attr, blobmsg_json_format_t cb, void *priv, int indent)
+ {
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+ 	struct strbuf s = {0};
++#pragma clang diagnostic pop
+ 	char *ret;
+ 
+ 	setup_strbuf(&s, attr, cb, priv, indent);
